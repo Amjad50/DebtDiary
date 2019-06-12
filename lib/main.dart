@@ -1,6 +1,14 @@
+import 'package:debtdiary/DataBaseHandler.dart';
+import 'package:debtdiary/Debt.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  all = await db.getAllDebts();
+  runApp(MyApp());
+}
+
+DataBaseHandler db = DataBaseHandler();
+List<Debt> all = [];
 
 class MyApp extends StatelessWidget {
   // root
@@ -26,23 +34,70 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  int _id = all.length;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: <Widget>[
+          PopupMenuButton<int>(
+            onSelected: (selected) async {
+              if (selected == 0) {
+                await db.clearDataBase().then((_) {
+                  db.getAllDebts().then((list) {
+                    setState(() {
+                      all = list;
+                      _id = 0;
+                    });
+                  });
+                });
+              }
+            },
+            itemBuilder: (_) => <PopupMenuEntry<int>>[
+                  PopupMenuItem(
+                    child: Text("delete"),
+                    value: 0,
+                  )
+                ],
+          ),
+        ],
         title: Text(widget.title),
       ),
       body: SafeArea(
         child: Center(
-          child: Container(
-            // TODO: add main page
-          )
-        ),
+            child: Container(
+          child: ListView(
+            children: all.map((e) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Text("${e.id}"),
+                  Text("${e.toPersonID}"),
+                  Text("${e.amount}"),
+                  Text("${e.reason}"),
+                ],
+              );
+            }).toList(),
+          ),
+        )),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        // TODO implement click
-      }, child: Icon(Icons.add),),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          db
+              .insertDebt(Debt(
+                  id: _id++, amount: 500, reason: "Hi", toPersonID: "welcome"))
+              .then((e) {
+            db.getAllDebts().then((list) {
+              setState(() {
+                all = list;
+              });
+            });
+          });
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
