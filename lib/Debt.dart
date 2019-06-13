@@ -1,3 +1,5 @@
+import 'package:debtdiary/UI/DebtBar.dart';
+
 class Debt {
 
   static const String IDNAME = 'id',
@@ -19,5 +21,9 @@ class Debt {
       'amount': amount,
       'reason': reason,
     };
+  }
+
+  DebtBar getUIView() {
+    return DebtBar(id: id, amount: amount, person: toPersonID, reason: reason,);
   }
 }

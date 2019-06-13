@@ -68,26 +68,16 @@ class _MainPageState extends State<MainPage> {
         child: Center(
             child: Container(
           child: ListView(
-            children: all.map((e) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Text("${e.id}"),
-                  Text("${e.toPersonID}"),
-                  Text("${e.amount}"),
-                  Text("${e.reason}"),
-                ],
-              );
-            }).toList(),
+            children: all.map((e) => e.getUIView()).toList(),
           ),
         )),
       ),
       floatingActionButton: FloatingActionButton(
+        // TODO: dialog
         onPressed: () {
           db
               .insertDebt(Debt(
-                  id: _id++, amount: 500, reason: "Hi", toPersonID: "welcome"))
+                  id: _id++, amount: -500, reason: "HiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHi", toPersonID: "welcome"))
               .then((e) {
             db.getAllDebts().then((list) {
               setState(() {
