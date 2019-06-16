@@ -3,13 +3,9 @@ import 'package:debtdiary/Debt.dart';
 import 'package:debtdiary/main.dart';
 
 class DebtBar extends StatefulWidget {
-  DebtBar({Key key, this.id, this.amount, this.person, this.reason})
-      : super(key: key);
+  DebtBar({Key key, this.debt}) : super(key: key);
 
-  final int id;
-  final double amount;
-  final String person;
-  final String reason;
+  final Debt debt;
 
   _DebtBarState createState() => _DebtBarState();
 }
@@ -22,7 +18,7 @@ class _DebtBarState extends State<DebtBar> {
 
   // TODO: implement
   void _deleteHandler() {
-    all.removeWhere((e) => e.id == widget.id);
+    all.removeWhere((e) => e.id == widget.debt.id);
   }
 
   @override
@@ -38,15 +34,15 @@ class _DebtBarState extends State<DebtBar> {
 
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text(
-              'data ${widget.id} ${direction == DismissDirection.startToEnd ? "payed" : "deleted"}'),
+              'data ${widget.debt.id} ${direction == DismissDirection.startToEnd ? "payed" : "deleted"}'),
           action: SnackBarAction(
             label: 'undo',
             onPressed: () {
               final Debt d = Debt(
-                id: widget.id,
-                toPersonID: widget.person,
-                amount: widget.amount,
-                reason: widget.reason,
+                id: widget.debt.id,
+                toPersonID: widget.debt.toPersonID,
+                amount: widget.debt.amount,
+                reason: widget.debt.reason,
               );
               setState(() {
                 // TODO: add remove implementation in DB
@@ -84,21 +80,21 @@ class _DebtBarState extends State<DebtBar> {
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               Icon(
-                widget.amount > 0
+                widget.debt.amount > 0
                     ? Icons.add_circle_outline
                     : Icons.remove_circle_outline,
                 size: 35,
               ),
               // ),
               Text(
-                "${widget.amount.abs()}",
+                "${widget.debt.amount.abs()}",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
-                "${widget.person}",
+                "${widget.debt.toPersonID}",
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -113,11 +109,16 @@ class _DebtBarState extends State<DebtBar> {
               horizontal: 35,
               vertical: 10,
             ),
-            child: Text(
-              widget.reason,
-              style: TextStyle(
-                fontSize: 18,
-              ),
+            child: Column(
+              children: <Widget>[
+                Text(
+                  widget.debt.reason,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+                Text(widget.debt.time)
+              ],
             ),
           )
         ],

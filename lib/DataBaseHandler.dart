@@ -13,12 +13,14 @@ class DataBaseHandler {
     return openDatabase(
       join(await getDatabasesPath(), 'debt_database.db'),
       onCreate: (db, version) {
-        return db.execute(
-          "CREATE TABLE $TABLENAME(${Debt.IDNAME} INTEGER PRIMARY KEY, ${Debt.PERSONNAME} TEXT, ${Debt.AMOUNTNAME} REAL, ${Debt.REASONNAME} TEXT)",
-          ).catchError((error) {
-            print("[!!] in OpenDataBase:DataBaseHandler");
-            print((error as Error).stackTrace);
-          });
+        return db
+            .execute(
+          "CREATE TABLE $TABLENAME(${Debt.ID_SQL_NAME} INTEGER PRIMARY KEY, ${Debt.PERSON_SQL_NAME} TEXT, ${Debt.AMOUNT_SQL_NAME} REAL, ${Debt.REASON_SQL_NAME} TEXT, ${Debt.TIME_SQL_NAME} TEXT)",
+        )
+            .catchError((error) {
+          print("[!!] in OpenDataBase:DataBaseHandler");
+          print((error as Error).stackTrace);
+        });
       },
       version: 1,
     );
@@ -41,11 +43,11 @@ class DataBaseHandler {
 
     return List.generate(list.length, (i) {
       return Debt(
-        id: list[i][Debt.IDNAME],
-        toPersonID: list[i][Debt.PERSONNAME],
-        amount: list[i][Debt.AMOUNTNAME],
-        reason: list[i][Debt.REASONNAME],
-      );
+          id: list[i][Debt.ID_SQL_NAME],
+          toPersonID: list[i][Debt.PERSON_SQL_NAME],
+          amount: list[i][Debt.AMOUNT_SQL_NAME],
+          reason: list[i][Debt.REASON_SQL_NAME],
+          time: list[i][Debt.TIME_SQL_NAME]);
     });
   }
 
