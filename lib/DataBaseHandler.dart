@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:debtdiary/Debt.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -29,11 +31,16 @@ class DataBaseHandler {
   Future<void> insertDebt(Debt debt) async {
     final Database db = await _database;
 
-    await db.insert(
+    await db
+        .insert(
       TABLENAME,
       debt.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    )
+        .catchError((error) {
+      print("[!!] in insertDebt:DataBaseHandler");
+      print((error as Error).stackTrace);
+    });
   }
 
   Future<List<Debt>> getAllDebts() async {
@@ -57,6 +64,15 @@ class DataBaseHandler {
     return await db.rawDelete("DELETE FROM $TABLENAME").catchError((error) {
       print("[!!] in ClearDataBase:DataBaseHandler");
       print((error as Error).stackTrace);
+    });
+  }
+
+  Future<bool> deleteDebt(Debt debt) async {
+    final Database db = await _database;
+
+    return await db
+        .delete(TABLENAME, where: "id=?", whereArgs: [debt.id]).then((e) {
+      return e == 1;
     });
   }
 }

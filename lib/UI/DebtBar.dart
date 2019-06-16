@@ -17,12 +17,15 @@ TextStyle _boldStyle(Color colorParam) => TextStyle(
     );
 
 class _DebtBarState extends State<DebtBar> {
-  // TODO: implement
-  void _payHandler() {}
+  // TODO: make an archive mekanism
+  void _payHandler() {
+    _deleteHandler();
+  }
 
-  // TODO: implement
   void _deleteHandler() {
-    all.removeWhere((e) => e.id == widget.debt.id);
+    db.deleteDebt(widget.debt).then((e) {
+      if (e) all.removeWhere((e) => e.id == widget.debt.id);
+    });
   }
 
   ListTile _getDataNode() {
@@ -55,16 +58,15 @@ class _DebtBarState extends State<DebtBar> {
 
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text(
-              'data ${widget.debt.id} ${direction == DismissDirection.startToEnd ? "payed" : "deleted"}'),
+              '${widget.debt.amount} was ${direction == DismissDirection.startToEnd ? "payed" : "deleted"}'),
           action: SnackBarAction(
             label: 'undo',
-            onPressed: () {
+            onPressed: () async {
               final Debt d = widget.debt;
-              setState(() {
-                // TODO: add remove implementation in DB
-                // await db.insertDebt(d).then((_) {
-                all.insert(all.length, d);
-                // });
+              await db.insertDebt(d).then((_) {
+                setState(() {
+                  all.insert(all.length, d);
+                });
               });
             },
           ),
@@ -77,13 +79,13 @@ class _DebtBarState extends State<DebtBar> {
         padding: EdgeInsets.symmetric(horizontal: 20),
         color: Colors.green,
         child: Icon(Icons.payment),
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
       ),
       secondaryBackground: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         color: Colors.redAccent,
         child: Icon(Icons.delete),
-        alignment: Alignment.centerRight,
+        alignment: AlignmentDirectional.centerEnd,
       ),
       child: _getDataNode(),
     );
