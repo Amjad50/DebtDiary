@@ -1,5 +1,6 @@
 import 'package:debtdiary/DataBaseHandler.dart';
 import 'package:debtdiary/Debt.dart';
+import 'package:debtdiary/UI/NewDialog.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -34,10 +35,33 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _id = all.length;
+  // use the next id after the largest
+  int _id = all.length > 0
+      ? all.reduce((d1, d2) => d1.id > d2.id ? d1 : d2).id + 1
+      : 0;
 
   @override
   Widget build(BuildContext context) {
+    void _showNewDialog() {
+      showDialog<Debt>(
+        context: context,
+        builder: (buildingContext) {
+          return NewDebtDialog(id: _id++);
+        },
+      ).then((value) {
+        print(value);
+        if (value != null) {
+          db.insertDebt(value).then((e) {
+            db.getAllDebts().then((list) {
+              setState(() {
+                all = list;
+              });
+            });
+          });
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
@@ -73,18 +97,8 @@ class _MainPageState extends State<MainPage> {
         )),
       ),
       floatingActionButton: FloatingActionButton(
-        // TODO: dialog
         onPressed: () {
-          db
-              .insertDebt(Debt(
-                  id: _id++, amount: -500, reason: "HiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHiHi", toPersonID: "welcome"))
-              .then((e) {
-            db.getAllDebts().then((list) {
-              setState(() {
-                all = list;
-              });
-            });
-          });
+          _showNewDialog();
         },
         child: Icon(Icons.add),
       ),
