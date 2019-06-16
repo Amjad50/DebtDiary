@@ -10,15 +10,36 @@ class DebtBar extends StatefulWidget {
   _DebtBarState createState() => _DebtBarState();
 }
 
-class _DebtBarState extends State<DebtBar> {
-  bool _expanded = false;
+TextStyle _boldStyle(Color colorParam) => TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: colorParam,
+    );
 
+class _DebtBarState extends State<DebtBar> {
   // TODO: implement
   void _payHandler() {}
 
   // TODO: implement
   void _deleteHandler() {
     all.removeWhere((e) => e.id == widget.debt.id);
+  }
+
+  ListTile _getDataNode() {
+    return ListTile(
+      title: Text(
+        widget.debt.toPersonID,
+        style: _boldStyle(null),
+      ),
+      subtitle: Text(
+        widget.debt.reason,
+        maxLines: 2,
+      ),
+      trailing: Text(
+        '${widget.debt.amount.abs()}',
+        style: _boldStyle(widget.debt.amount < 0 ? Colors.red : Colors.green),
+      ),
+    );
   }
 
   @override
@@ -38,12 +59,7 @@ class _DebtBarState extends State<DebtBar> {
           action: SnackBarAction(
             label: 'undo',
             onPressed: () {
-              final Debt d = Debt(
-                id: widget.debt.id,
-                toPersonID: widget.debt.toPersonID,
-                amount: widget.debt.amount,
-                reason: widget.debt.reason,
-              );
+              final Debt d = widget.debt;
               setState(() {
                 // TODO: add remove implementation in DB
                 // await db.insertDebt(d).then((_) {
@@ -69,60 +85,7 @@ class _DebtBarState extends State<DebtBar> {
         child: Icon(Icons.delete),
         alignment: Alignment.centerRight,
       ),
-      child: ExpansionTile(
-        backgroundColor: Colors.black12,
-        title: Container(
-          margin: EdgeInsets.all(10),
-          padding: EdgeInsets.symmetric(vertical: 5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Icon(
-                widget.debt.amount > 0
-                    ? Icons.add_circle_outline
-                    : Icons.remove_circle_outline,
-                size: 35,
-              ),
-              // ),
-              Text(
-                "${widget.debt.amount.abs()}",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "${widget.debt.toPersonID}",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 35,
-              vertical: 10,
-            ),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  widget.debt.reason,
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-                Text(widget.debt.time)
-              ],
-            ),
-          )
-        ],
-      ),
+      child: _getDataNode(),
     );
   }
 }
