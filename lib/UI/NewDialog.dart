@@ -23,7 +23,11 @@ class _NewDebtDialogState extends State<NewDebtDialog> {
     return AlertDialog(
       actions: <Widget>[
         FlatButton(
-          child: Text('Okay'),
+          child: Text('CANCEL'),
+          onPressed: () => Navigator.pop(context, null),
+        ),
+        FlatButton(
+          child: Text('OK'),
           onPressed: () {
             if (_personName != null &&
                 _personName.isNotEmpty &&
@@ -40,10 +44,6 @@ class _NewDebtDialogState extends State<NewDebtDialog> {
             else
               Navigator.pop(context, null);
           },
-        ),
-        FlatButton(
-          child: Text('Cancel'),
-          onPressed: () => Navigator.pop(context, null),
         ),
       ],
       content: Column(
