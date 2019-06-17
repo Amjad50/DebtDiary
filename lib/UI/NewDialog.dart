@@ -21,65 +21,67 @@ class _NewDebtDialogState extends State<NewDebtDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Okay'),
-            onPressed: () {
-              if (_personName != null &&
-                  _personName.isNotEmpty &&
-                  _reason != null &&
-                  _reason.isNotEmpty &&
-                  _amount != 0)
-                Navigator.pop(
-                    context,
-                    Debt(
-                        amount: _amount,
-                        toPersonID: _personName,
-                        reason: _reason,
-                        id: widget.id));
-              else
-                Navigator.pop(context, null);
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Okay'),
+          onPressed: () {
+            if (_personName != null &&
+                _personName.isNotEmpty &&
+                _reason != null &&
+                _reason.isNotEmpty &&
+                _amount != 0)
+              Navigator.pop(
+                  context,
+                  Debt(
+                      amount: _amount,
+                      toPersonID: _personName,
+                      reason: _reason,
+                      id: widget.id));
+            else
+              Navigator.pop(context, null);
+          },
+        ),
+        FlatButton(
+          child: Text('Cancel'),
+          onPressed: () => Navigator.pop(context, null),
+        ),
+      ],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          TextField(
+            maxLines: 1,
+            decoration: InputDecoration(
+              labelText: 'person',
+            ),
+            onChanged: (value) => setState(() => _personName = value),
+          ),
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'amount',
+              errorText: _showAmountError ? _AMOUNTERROR : null,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              setState(() {
+                double doubleValue = double.tryParse(value);
+
+                if (doubleValue == null) {
+                  _amount = 0;
+                  _showAmountError = true;
+                } else {
+                  _amount = doubleValue;
+                  _showAmountError = false;
+                }
+              });
             },
           ),
-          FlatButton(
-            child: Text('Cancel'),
-            onPressed: () => Navigator.pop(context, null),
+          TextField(
+            decoration: InputDecoration(labelText: 'reason'),
+            onChanged: (value) => setState(() => _reason = value),
           ),
         ],
-        content: Column(
-          children: <Widget>[
-            TextField(
-              maxLines: 1,
-              decoration: InputDecoration(
-                labelText: 'person',
-              ),
-              onChanged: (value) => setState(() => _personName = value),
-            ),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'amount',
-                errorText: _showAmountError ? _AMOUNTERROR : null,
-              ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                setState(() {
-                  double doubleValue = double.tryParse(value);
-
-                  if (doubleValue == null) {
-                    _amount = 0;
-                    _showAmountError = true;
-                  } else {
-                    _amount = doubleValue;
-                    _showAmountError = false;
-                  }
-                });
-              },
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'reason'),
-              onChanged: (value) => setState(() => _reason = value),
-            )
-          ],
-        ));
+      ),
+    );
   }
 }
